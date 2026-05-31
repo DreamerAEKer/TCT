@@ -34,34 +34,39 @@
 
 
 
-            <div class="results">
-                <div class="result-box user-pay">
-                    <h3>คุณต้องจ่ายเอง (แอปเป๋าตัง)</h3>
-                    <div class="amount" id="user-pay-amount">0.00</div>
-                    <div class="amount-label">บาท</div>
+            <div id="results-section" class="hidden">
+                <div class="results">
+                    <div class="result-box user-pay">
+                        <h3>คุณต้องจ่ายเอง (แอปเป๋าตัง)</h3>
+                        <div class="amount" id="user-pay-amount">0.00</div>
+                        <div class="amount-label">บาท</div>
+                    </div>
+                    
+                    <div class="result-box gov-pay">
+                        <h3>รัฐช่วยจ่าย (60%)</h3>
+                        <div class="amount" id="gov-pay-amount">0.00</div>
+                        <div class="amount-label">บาท</div>
+                    </div>
                 </div>
-                
-                
-                <div class="result-box gov-pay">
-                    <h3>รัฐช่วยจ่าย (60%)</h3>
-                    <div class="amount" id="gov-pay-amount">0.00</div>
-                    <div class="amount-label">บาท</div>
-                </div>
+                <button type="button" id="btn-back" class="back-btn">แก้ไขราคา</button>
             </div>
 
-            <div class="numpad">
-                <button type="button" class="num-btn" data-val="1">1</button>
-                <button type="button" class="num-btn" data-val="2">2</button>
-                <button type="button" class="num-btn" data-val="3">3</button>
-                <button type="button" class="num-btn" data-val="4">4</button>
-                <button type="button" class="num-btn" data-val="5">5</button>
-                <button type="button" class="num-btn" data-val="6">6</button>
-                <button type="button" class="num-btn" data-val="7">7</button>
-                <button type="button" class="num-btn" data-val="8">8</button>
-                <button type="button" class="num-btn" data-val="9">9</button>
-                <button type="button" class="num-btn action-btn" id="btn-clear">C</button>
-                <button type="button" class="num-btn" data-val="0">0</button>
-                <button type="button" class="num-btn action-btn" id="btn-del">⌫</button>
+            <div id="numpad-section">
+                <div class="numpad">
+                    <button type="button" class="num-btn" data-val="1">1</button>
+                    <button type="button" class="num-btn" data-val="2">2</button>
+                    <button type="button" class="num-btn" data-val="3">3</button>
+                    <button type="button" class="num-btn" data-val="4">4</button>
+                    <button type="button" class="num-btn" data-val="5">5</button>
+                    <button type="button" class="num-btn" data-val="6">6</button>
+                    <button type="button" class="num-btn" data-val="7">7</button>
+                    <button type="button" class="num-btn" data-val="8">8</button>
+                    <button type="button" class="num-btn" data-val="9">9</button>
+                    <button type="button" class="num-btn action-btn" id="btn-clear">C</button>
+                    <button type="button" class="num-btn" data-val="0">0</button>
+                    <button type="button" class="num-btn action-btn" id="btn-del">⌫</button>
+                </div>
+                <button type="button" id="btn-confirm" class="confirm-btn">ยืนยัน</button>
             </div>
         </main>
 

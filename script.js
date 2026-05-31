@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSettingsBtn = document.getElementById('close-settings');
     const settingsModal = document.getElementById('settings-modal');
 
+    // Section elements
+    const numpadSection = document.getElementById('numpad-section');
+    const resultsSection = document.getElementById('results-section');
+    const btnConfirm = document.getElementById('btn-confirm');
+    const btnBack = document.getElementById('btn-back');
+
     function calculate() {
         let price = parseFloat(priceInput.value);
         let quotaDay = parseFloat(quotaDayInput.value);
@@ -56,6 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     quotaDayInput.addEventListener('input', calculate);
     quotaMonthInput.addEventListener('input', calculate);
 
+    // Section toggles
+    btnConfirm.addEventListener('click', () => {
+        if (priceInput.value === '0' || priceInput.value === '') return;
+        numpadSection.classList.add('hidden');
+        resultsSection.classList.remove('hidden');
+        calculate();
+    });
+
+    btnBack.addEventListener('click', () => {
+        resultsSection.classList.add('hidden');
+        numpadSection.classList.remove('hidden');
+    });
+
     // Numpad logic
     const numBtns = document.querySelectorAll('.num-btn[data-val]');
     const btnClear = document.getElementById('btn-clear');
@@ -68,13 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 priceInput.value += btn.dataset.val;
             }
-            calculate();
         });
     });
 
     btnClear.addEventListener('click', () => {
         priceInput.value = '0';
-        calculate();
     });
 
     btnDel.addEventListener('click', () => {
@@ -82,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (priceInput.value === '') {
             priceInput.value = '0';
         }
-        calculate();
     });
 
     // Modal listeners
