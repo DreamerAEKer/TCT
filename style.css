@@ -21,13 +21,11 @@ body {
     font-family: 'Kanit', sans-serif;
     background: var(--bg-gradient);
     color: var(--text-main);
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
-    align-items: center;
     position: relative;
-    overflow-x: hidden;
-    overflow-y: hidden; /* Prevent scrolling if possible */
+    overflow: hidden; /* Prevent scrolling */
 }
 
 .hidden {
@@ -53,13 +51,13 @@ body {
 .container {
     width: 100%;
     max-width: 480px;
-    padding: 1rem;
+    padding: 1rem 1rem 1.5rem 1rem; /* Extra padding at bottom for safe area */
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: 100vh; /* Fill screen to center vertically without scrolling */
+    justify-content: space-between; /* Push header up, numpad down */
+    height: 100dvh;
 }
 
 header {
@@ -131,13 +129,10 @@ h1 {
 }
 
 .calculator-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 1.25rem;
-    padding: 1.25rem;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .input-group {
@@ -160,17 +155,18 @@ h1 {
 
 .input-wrapper input {
     width: 100%;
-    padding: 0.75rem;
-    padding-right: 2.5rem;
-    font-size: 1.25rem;
+    padding: 1rem;
+    padding-right: 3rem;
+    font-size: 2rem;
     font-weight: 600;
     font-family: 'Kanit', sans-serif;
     color: var(--text-main);
-    background: rgba(255, 255, 255, 0.9);
+    background: white;
     border: 2px solid #e2e8f0;
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     outline: none;
     transition: all 0.3s ease;
+    text-align: right; /* Match iOS calculator style */
 }
 
 .input-wrapper input:focus {
@@ -180,8 +176,8 @@ h1 {
 
 .input-wrapper .currency {
     position: absolute;
-    right: 1rem;
-    font-size: 1.1rem;
+    right: 1.2rem;
+    font-size: 1.5rem;
     color: var(--text-muted);
     font-weight: 500;
 }
@@ -257,7 +253,7 @@ footer p {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     justify-items: center;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     margin-bottom: 1.5rem;
 }
 
