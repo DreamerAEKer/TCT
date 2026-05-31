@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Fix iOS active state delay
+    document.body.addEventListener('touchstart', function() {}, {passive: true});
+
     const priceInput = document.getElementById('price');
     const quotaDayInput = document.getElementById('quota-day');
     const quotaMonthInput = document.getElementById('quota-month');
@@ -128,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDel = document.getElementById('btn-del');
 
     numBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); // Prevents simulated mouse click firing later
             if (priceInput.value === '0') {
                 priceInput.value = btn.dataset.val;
             } else {
@@ -137,11 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    btnClear.addEventListener('click', () => {
+    btnClear.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
         priceInput.value = '0';
     });
 
-    btnDel.addEventListener('click', () => {
+    btnDel.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
         priceInput.value = priceInput.value.slice(0, -1);
         if (priceInput.value === '') {
             priceInput.value = '0';
