@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const quotaMonthInput = document.getElementById('quota-month');
     const userPayAmount = document.getElementById('user-pay-amount');
     const govPayAmount = document.getElementById('gov-pay-amount');
+    
+    // Modal elements
+    const settingsBtn = document.getElementById('settings-btn');
+    const closeSettingsBtn = document.getElementById('close-settings');
+    const settingsModal = document.getElementById('settings-modal');
 
     function calculate() {
         let price = parseFloat(priceInput.value);
@@ -51,6 +56,22 @@ document.addEventListener('DOMContentLoaded', () => {
     priceInput.addEventListener('input', calculate);
     quotaDayInput.addEventListener('input', calculate);
     quotaMonthInput.addEventListener('input', calculate);
+
+    // Modal listeners
+    settingsBtn.addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+    });
+
+    // Close modal if clicked outside
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            settingsModal.classList.add('hidden');
+        }
+    });
 
     // Initial calculation
     calculate();
