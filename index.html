@@ -17,11 +17,12 @@
     <div class="container">
         <header>
             <div class="header-top">
+                <button id="history-btn" class="icon-btn" aria-label="ประวัติ">🕒</button>
                 <div class="logo">
                     <span class="logo-thai">ไทยช่วยไทย</span>
                     <span class="logo-6040">60/40 พลัส</span>
                 </div>
-                <button id="settings-btn" class="settings-btn" aria-label="ตั้งค่า">⚙️</button>
+                <button id="settings-btn" class="icon-btn" aria-label="ตั้งค่า">⚙️</button>
             </div>
             <h1>คำนวณยอดจ่ายแอปเป๋าตัง</h1>
         </header>
@@ -51,7 +52,8 @@
                         <div class="amount-label">บาท</div>
                     </div>
                 </div>
-                <button type="button" id="btn-back" class="back-btn">แก้ไขราคา</button>
+                <button type="button" id="btn-done" class="confirm-btn" style="margin-top: 1.5rem;">✅ เสร็จสิ้น (รับเงินแล้ว)</button>
+                <button type="button" id="btn-back" class="back-btn" style="margin-top: 0.5rem;">แก้ไขราคา</button>
             </div>
 
             <div id="numpad-section">
@@ -99,6 +101,20 @@
                     <span class="currency">฿</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🕒 ประวัติการใช้งาน</h2>
+                <button id="close-history" class="close-btn">✕</button>
+            </div>
+            <div id="history-list" class="history-list">
+                <!-- Items populated by JS -->
+            </div>
+            <button id="clear-history" class="back-btn" style="color: #e11d48; margin-top: 1rem;">ล้างประวัติทั้งหมด</button>
         </div>
     </div>
 

@@ -68,7 +68,7 @@ header {
 .header-top {
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
 }
@@ -105,11 +105,7 @@ h1 {
     color: var(--primary);
 }
 
-.settings-btn {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+.icon-btn {
     background: white;
     border: none;
     border-radius: 50%;
@@ -124,8 +120,8 @@ h1 {
     transition: transform 0.2s ease;
 }
 
-.settings-btn:active {
-    transform: translateY(-50%) scale(0.9);
+.icon-btn:active {
+    transform: scale(0.9);
 }
 
 .calculator-card {
@@ -397,3 +393,40 @@ footer p {
     font-size: 1.1rem;
     padding: 0.5rem;
 }
+
+/* History List */
+.history-list {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.history-item {
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    border: 1px solid #e2e8f0;
+}
+
+.history-item .time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.history-item .details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-item .details span {
+    font-weight: 500;
+}
+
+.text-green { color: var(--accent); }
+.text-blue { color: var(--primary); }
+
