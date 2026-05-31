@@ -129,11 +129,12 @@ h1 {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .input-group {
-    margin-bottom: 0.75rem;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .input-group label {
@@ -248,19 +249,18 @@ footer p {
 .numpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    row-gap: 1.25rem;
     justify-items: center;
-    margin-top: 1rem;
     margin-bottom: 1.5rem;
 }
 
 .num-btn {
-    width: 75px;
-    height: 75px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: #ffffff;
     border: none;
-    font-size: 2.2rem;
+    font-size: 2.25rem;
     font-weight: 400;
     color: #000;
     cursor: pointer;
@@ -291,11 +291,12 @@ footer p {
     color: white;
     border: none;
     border-radius: 1rem;
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3);
     transition: transform 0.1s;
+    margin-bottom: 1rem;
 }
 
 .confirm-btn:active {
