@@ -26,7 +26,8 @@ body {
     display: flex;
     justify-content: center;
     position: relative;
-    overflow: hidden; /* Prevent scrolling */
+    overflow-x: hidden;
+    overflow-y: auto; /* Allow scrolling on short screens */
 }
 
 .hidden {
@@ -34,7 +35,7 @@ body {
 }
 
 .background-animation {
-    position: absolute;
+    position: fixed; /* Fixed so it doesn't break on scroll */
     top: -50%;
     left: -50%;
     width: 200%;
@@ -58,7 +59,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Push header up, numpad down */
-    height: 100dvh;
+    min-height: 100dvh;
+    height: auto;
 }
 
 header {
