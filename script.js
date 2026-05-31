@@ -52,10 +52,38 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.add('animate-pulse');
     }
 
-    // Add event listeners
-    priceInput.addEventListener('input', calculate);
+    // Add event listeners for quota inputs
     quotaDayInput.addEventListener('input', calculate);
     quotaMonthInput.addEventListener('input', calculate);
+
+    // Numpad logic
+    const numBtns = document.querySelectorAll('.num-btn[data-val]');
+    const btnClear = document.getElementById('btn-clear');
+    const btnDel = document.getElementById('btn-del');
+
+    numBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (priceInput.value === '0') {
+                priceInput.value = btn.dataset.val;
+            } else {
+                priceInput.value += btn.dataset.val;
+            }
+            calculate();
+        });
+    });
+
+    btnClear.addEventListener('click', () => {
+        priceInput.value = '0';
+        calculate();
+    });
+
+    btnDel.addEventListener('click', () => {
+        priceInput.value = priceInput.value.slice(0, -1);
+        if (priceInput.value === '') {
+            priceInput.value = '0';
+        }
+        calculate();
+    });
 
     // Modal listeners
     settingsBtn.addEventListener('click', () => {

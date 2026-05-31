@@ -27,7 +27,7 @@
             <div class="input-group">
                 <label for="price">ราคาสินค้า (บาท)</label>
                 <div class="input-wrapper">
-                    <input type="number" id="price" placeholder="0" min="0" step="1">
+                    <input type="text" id="price" placeholder="0" readonly>
                     <span class="currency">฿</span>
                 </div>
             </div>
@@ -41,11 +41,27 @@
                     <div class="amount-label">บาท</div>
                 </div>
                 
+                
                 <div class="result-box gov-pay">
                     <h3>รัฐช่วยจ่าย (60%)</h3>
                     <div class="amount" id="gov-pay-amount">0.00</div>
                     <div class="amount-label">บาท</div>
                 </div>
+            </div>
+
+            <div class="numpad">
+                <button type="button" class="num-btn" data-val="1">1</button>
+                <button type="button" class="num-btn" data-val="2">2</button>
+                <button type="button" class="num-btn" data-val="3">3</button>
+                <button type="button" class="num-btn" data-val="4">4</button>
+                <button type="button" class="num-btn" data-val="5">5</button>
+                <button type="button" class="num-btn" data-val="6">6</button>
+                <button type="button" class="num-btn" data-val="7">7</button>
+                <button type="button" class="num-btn" data-val="8">8</button>
+                <button type="button" class="num-btn" data-val="9">9</button>
+                <button type="button" class="num-btn action-btn" id="btn-clear">C</button>
+                <button type="button" class="num-btn" data-val="0">0</button>
+                <button type="button" class="num-btn action-btn" id="btn-del">⌫</button>
             </div>
         </main>
 
