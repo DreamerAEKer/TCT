@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคิดเลข ไทยช่วยไทย 60/40 พลัส</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-thai">ไทยช่วยไทย</span>
+                <span class="logo-6040">60/40 พลัส</span>
+            </div>
+            <h1>คำนวณยอดจ่ายแอปเป๋าตัง</h1>
+            <p>กรอกราคาสินค้าเพื่อดูยอดที่ต้องสแกนจ่าย</p>
+        </header>
+
+        <main class="calculator-card">
+            <div class="input-group">
+                <label for="price">ราคาสินค้า (บาท)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="price" placeholder="0" min="0" step="1">
+                    <span class="currency">฿</span>
+                </div>
+            </div>
+
+            <details class="advanced-settings">
+                <summary>⚙️ ตั้งค่าสิทธิคงเหลือ (กรณีใช้สิทธิไปแล้ว)</summary>
+                <div class="settings-content">
+                    <div class="input-group quota-group">
+                        <label for="quota-day">สิทธิคงเหลือของวันนี้ (สูงสุด 200 บาท)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="quota-day" placeholder="200" value="200" min="0" max="200" step="1">
+                            <span class="currency">฿</span>
+                        </div>
+                    </div>
+                    <div class="input-group quota-group">
+                        <label for="quota-month">สิทธิคงเหลือของเดือนนี้ (สูงสุด 1,000 บาท)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="quota-month" placeholder="1000" value="1000" min="0" max="1000" step="1">
+                            <span class="currency">฿</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <div class="results">
+                <div class="result-box user-pay">
+                    <h3>คุณต้องจ่ายเอง (แอปเป๋าตัง)</h3>
+                    <div class="amount" id="user-pay-amount">0.00</div>
+                    <div class="amount-label">บาท</div>
+                </div>
+                
+                <div class="result-box gov-pay">
+                    <h3>รัฐช่วยจ่าย (60%)</h3>
+                    <div class="amount" id="gov-pay-amount">0.00</div>
+                    <div class="amount-label">บาท</div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>โครงการลดภาระ ลดค่าครองชีพ ชำระเงินผ่าน G-Wallet บนแอปฯ "เป๋าตัง"</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
