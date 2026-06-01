@@ -26,7 +26,8 @@ body {
     display: flex;
     justify-content: center;
     position: relative;
-    overflow: hidden; /* Lock scrolling globally */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .hidden {
@@ -58,8 +59,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100dvh;
 }
 
 header {
