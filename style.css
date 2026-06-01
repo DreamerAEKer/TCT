@@ -43,6 +43,9 @@ body {
     background: radial-gradient(circle, rgba(225,29,72,0.05) 0%, rgba(30,58,138,0.05) 50%, rgba(255,255,255,0) 100%);
     animation: rotateBg 30s linear infinite;
     z-index: -1;
+    will-change: transform;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 @keyframes rotateBg {
