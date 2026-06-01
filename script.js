@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearHistoryBtn = document.getElementById('clear-history');
 
     // State
-    let quotaDay = parseFloat(localStorage.getItem('tct_quotaDay')) || 200;
-    let quotaMonth = parseFloat(localStorage.getItem('tct_quotaMonth')) || 1000;
+    let quotaDay = Math.round((parseFloat(localStorage.getItem('tct_quotaDay')) || 200) * 100) / 100;
+    let quotaMonth = Math.round((parseFloat(localStorage.getItem('tct_quotaMonth')) || 1000) * 100) / 100;
     let history = JSON.parse(localStorage.getItem('tct_history')) || [];
 
     const timeAlert = document.getElementById('time-alert');
@@ -128,13 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         localStorage.setItem('tct_history', JSON.stringify(history));
 
-        // Deduct Quotas
-        quotaDay = Math.max(0, quotaDay - currentGovPay);
-        quotaMonth = Math.max(0, quotaMonth - currentGovPay);
-        quotaDayInput.value = quotaDay;
-        quotaMonthInput.value = quotaMonth;
-        localStorage.setItem('tct_quotaDay', quotaDay);
-        localStorage.setItem('tct_quotaMonth', quotaMonth);
+        // Note: Quota auto-deduction removed per user request. 
+        // Quotas will now only be updated manually via settings.
 
         // Reset App
         priceInput.value = '0';

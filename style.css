@@ -279,6 +279,7 @@ footer p {
     row-gap: min(1.25rem, 2vh);
     justify-items: center;
     margin-bottom: min(1.5rem, 2vh);
+    margin-top: 1.5rem;
 }
 
 .num-btn {
