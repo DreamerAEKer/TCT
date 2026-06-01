@@ -133,6 +133,29 @@ h1 {
     justify-content: flex-end;
 }
 
+.time-alert {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.time-alert .alert-icon {
+    font-size: 1.5rem;
+}
+
+.time-alert p {
+    font-size: 0.85rem;
+    color: #be123c;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
 .input-group {
     margin-top: auto;
     margin-bottom: auto;

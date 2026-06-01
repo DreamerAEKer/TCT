@@ -32,10 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let quotaMonth = parseFloat(localStorage.getItem('tct_quotaMonth')) || 1000;
     let history = JSON.parse(localStorage.getItem('tct_history')) || [];
 
+    const timeAlert = document.getElementById('time-alert');
+
     quotaDayInput.value = quotaDay;
     quotaMonthInput.value = quotaMonth;
 
+    function checkTimeRestriction() {
+        const now = new Date();
+        const hours = now.getHours();
+        // Allowed time: 06:00 - 23:00
+        if (hours < 6 || hours >= 23) {
+            timeAlert.classList.remove('hidden');
+        } else {
+            timeAlert.classList.add('hidden');
+        }
+    }
+    
+    // Check time once on load
+    checkTimeRestriction();
+
     function calculate() {
+        checkTimeRestriction(); // Check again when user calculates
         let price = parseFloat(priceInput.value);
         quotaDay = parseFloat(quotaDayInput.value);
         quotaMonth = parseFloat(quotaMonthInput.value);
