@@ -75,7 +75,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
 }
 
 .logo {
@@ -83,13 +83,13 @@ header {
     flex-direction: column;
     align-items: center;
     background: white;
-    padding: 0.25rem 1rem;
+    padding: 0.15rem 0.75rem;
     border-radius: 1.5rem;
     box-shadow: var(--shadow-sm);
 }
 
 .logo-thai {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     background: linear-gradient(to right, var(--primary), var(--secondary));
     -webkit-background-clip: text;
@@ -98,25 +98,26 @@ header {
 }
 
 .logo-6040 {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--accent);
     line-height: 1.2;
 }
 
 h1 {
-    font-size: 1.15rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--primary);
+    margin-top: 0.25rem;
 }
 
 .icon-btn {
     background: white;
     border: none;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
     display: flex;
@@ -467,16 +468,16 @@ footer p {
     background: #e2e8f0;
     border-radius: 1.5rem;
     padding: 0.25rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     border: none;
     border-radius: 1.25rem;
     background: transparent;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-muted);
     cursor: pointer;
