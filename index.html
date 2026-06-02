@@ -33,32 +33,86 @@
                 <p>ไม่สามารถใช้สิทธิได้ในขณะนี้<br>คุณสามารถใช้สิทธิได้ในเวลา 06:00 - 23:00 น. เท่านั้น</p>
             </div>
 
-            <div class="input-group">
-                <label for="price">ราคาสินค้า (บาท)</label>
-                <div class="input-wrapper">
-                    <input type="text" id="price" placeholder="0" readonly>
-                    <span class="currency">฿</span>
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-tab="split">แยกบิล</button>
+                <button type="button" class="tab-btn" data-tab="fill40">เติม 40%</button>
+            </div>
+
+            <!-- Tab: แยกบิล -->
+            <div id="tab-split" class="tab-content active">
+                <div class="input-group">
+                    <label for="price">ราคาสินค้า (บาท)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="price" class="numpad-target active-target" placeholder="0" readonly>
+                        <span class="currency">฿</span>
+                    </div>
+                </div>
+
+                <div id="results-section" class="hidden">
+                    <div class="results">
+                        <div class="result-box user-pay">
+                            <h3>คุณต้องจ่ายเอง (แอปเป๋าตัง)</h3>
+                            <div class="amount" id="user-pay-amount">0.00</div>
+                            <div class="amount-label">บาท</div>
+                        </div>
+                        
+                        <div class="result-box gov-pay">
+                            <h3>รัฐช่วยจ่าย (60%)</h3>
+                            <div class="amount" id="gov-pay-amount">0.00</div>
+                            <div class="amount-label">บาท</div>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-done" class="confirm-btn" style="margin-top: 1.5rem;">✅ เสร็จสิ้น เรียบร้อยแล้ว</button>
+                    <button type="button" id="btn-back" class="back-btn" style="margin-top: 0.5rem;">แก้ไขราคา</button>
                 </div>
             </div>
 
+            <!-- Tab: เติม 40% -->
+            <div id="tab-fill40" class="tab-content hidden">
+                <div class="fill-header">
+                    <h3>👛 ใส่ยอดเงินรัฐที่จะใช้</h3>
+                    <p>เช็คทันทีว่าต้องเติมเข้าเป๋าตังอีกเท่าไหร่</p>
+                </div>
 
-
-            <div id="results-section" class="hidden">
-                <div class="results">
-                    <div class="result-box user-pay">
-                        <h3>คุณต้องจ่ายเอง (แอปเป๋าตัง)</h3>
-                        <div class="amount" id="user-pay-amount">0.00</div>
-                        <div class="amount-label">บาท</div>
-                    </div>
-                    
-                    <div class="result-box gov-pay">
-                        <h3>รัฐช่วยจ่าย (60%)</h3>
-                        <div class="amount" id="gov-pay-amount">0.00</div>
-                        <div class="amount-label">บาท</div>
+                <div class="input-group">
+                    <label for="gov-price">เงินรัฐ (บาท)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="gov-price" class="numpad-target" placeholder="0" readonly>
+                        <span class="currency">฿</span>
                     </div>
                 </div>
-                <button type="button" id="btn-done" class="confirm-btn" style="margin-top: 1.5rem;">✅ เสร็จสิ้น เรียบร้อยแล้ว</button>
-                <button type="button" id="btn-back" class="back-btn" style="margin-top: 0.5rem;">แก้ไขราคา</button>
+
+                <div class="fill-result-main">
+                    <div class="fill-result-top">
+                        <span class="fill-label">คุณต้องเติมอีก</span>
+                        <div class="fill-amount-big" id="fill-user-topup">฿0.00</div>
+                    </div>
+                    <div class="fill-divider"></div>
+                    <div class="fill-result-bottom">
+                        <span>ยอดรวมที่ใช้ได้</span>
+                        <span class="fill-total" id="fill-total-amount">฿0.00</span>
+                    </div>
+                </div>
+
+                <div class="fill-breakdown">
+                    <div class="breakdown-box gov-box">
+                        <span class="bd-label">ส่วนรัฐ 60%</span>
+                        <span class="bd-val" id="fill-gov-part">฿0.00</span>
+                    </div>
+                    <div class="breakdown-box user-box">
+                        <span class="bd-label">ส่วนคุณ 40%</span>
+                        <span class="bd-val" id="fill-user-part">฿0.00</span>
+                    </div>
+                </div>
+
+                <div class="fill-total-box">
+                    <span class="bd-label">ยอดรวมที่ใช้ได้</span>
+                    <span class="bd-val" id="fill-total-part">฿0.00</span>
+                </div>
+                
+                <div class="quota-warning">
+                    ⚠️ เงิน 1,000 บาท ใช้ไม่หมด ไม่ทบเดือนถัดไป
+                </div>
             </div>
 
             <div id="numpad-section">

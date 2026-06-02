@@ -2,12 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fix iOS active state delay
     document.body.addEventListener('touchstart', function() {}, {passive: true});
 
+    // Inputs
     const priceInput = document.getElementById('price');
+    const govPriceInput = document.getElementById('gov-price');
+    let activeInput = priceInput; // default
+
+    // Quotas
     const quotaDayInput = document.getElementById('quota-day');
     const quotaMonthInput = document.getElementById('quota-month');
+    
+    // Split Bill Elements
     const userPayAmount = document.getElementById('user-pay-amount');
     const govPayAmount = document.getElementById('gov-pay-amount');
     
+    // Fill 40% Elements
+    const fillUserTopup = document.getElementById('fill-user-topup');
+    const fillTotalAmount = document.getElementById('fill-total-amount');
+    const fillGovPart = document.getElementById('fill-gov-part');
+    const fillUserPart = document.getElementById('fill-user-part');
+    const fillTotalPart = document.getElementById('fill-total-part');
+
     // Modal elements
     const settingsBtn = document.getElementById('settings-btn');
     const closeSettingsBtn = document.getElementById('close-settings');
@@ -26,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeHistoryBtn = document.getElementById('close-history');
     const historyList = document.getElementById('history-list');
     const clearHistoryBtn = document.getElementById('clear-history');
+
+    // Tab elements
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
 
     // State
     let quotaDay = Math.round((parseFloat(localStorage.getItem('tct_quotaDay')) || 200) * 100) / 100;
@@ -51,42 +69,90 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check time once on load
     checkTimeRestriction();
 
+    // Tab Switching
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active from all
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.add('hidden'));
+
+            // Add active to clicked
+            btn.classList.add('active');
+            const targetId = `tab-${btn.dataset.tab}`;
+            document.getElementById(targetId).classList.remove('hidden');
+
+            // Switch active input
+            document.querySelectorAll('.numpad-target').forEach(inp => inp.classList.remove('active-target'));
+            if (btn.dataset.tab === 'split') {
+                activeInput = priceInput;
+                activeInput.classList.add('active-target');
+                numpadSection.classList.remove('hidden');
+                if (priceInput.value !== '' && priceInput.value !== '0' && !resultsSection.classList.contains('hidden')) {
+                    numpadSection.classList.add('hidden');
+                }
+            } else if (btn.dataset.tab === 'fill40') {
+                activeInput = govPriceInput;
+                activeInput.classList.add('active-target');
+                numpadSection.classList.remove('hidden'); // Fill 40 updates live, always show numpad initially unless we decide otherwise
+            }
+            calculate();
+        });
+    });
+
     function calculate() {
         checkTimeRestriction(); // Check again when user calculates
-        let price = parseFloat(priceInput.value);
+        
+        // Quota updates
         quotaDay = parseFloat(quotaDayInput.value);
         quotaMonth = parseFloat(quotaMonthInput.value);
-
-        if (isNaN(price) || price < 0) price = 0;
         if (isNaN(quotaDay) || quotaDay < 0) quotaDay = 0;
         if (isNaN(quotaMonth) || quotaMonth < 0) quotaMonth = 0;
-
         localStorage.setItem('tct_quotaDay', quotaDay);
         localStorage.setItem('tct_quotaMonth', quotaMonth);
 
-        if (quotaDay > 200) quotaDay = 200; // Maximum daily quota per rule
-        if (quotaMonth > 1000) quotaMonth = 1000; // Maximum monthly quota
+        // Active Tab Logic
+        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
 
-        // Government pays 60%, capped at BOTH remaining daily and monthly quotas
-        let govPay = price * 0.6;
-        govPay = Math.min(govPay, quotaDay, quotaMonth);
+        if (activeTab === 'split') {
+            let price = parseFloat(priceInput.value);
+            if (isNaN(price) || price < 0) price = 0;
 
-        // User pays the rest
-        let userPay = price - govPay;
+            if (quotaDay > 200) quotaDay = 200;
+            if (quotaMonth > 1000) quotaMonth = 1000;
 
-        // Format to 2 decimal places
-        const formattedUserPay = userPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const formattedGovPay = govPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // Government pays 60%, capped at BOTH remaining daily and monthly quotas
+            let govPay = price * 0.6;
+            govPay = Math.min(govPay, quotaDay, quotaMonth);
 
-        // Update DOM if changed
-        if (userPayAmount.innerText !== formattedUserPay) {
-            userPayAmount.innerText = formattedUserPay;
-            triggerAnimation(userPayAmount);
-        }
-        
-        if (govPayAmount.innerText !== formattedGovPay) {
-            govPayAmount.innerText = formattedGovPay;
-            triggerAnimation(govPayAmount);
+            // User pays the rest
+            let userPay = price - govPay;
+
+            // Format to 2 decimal places
+            const formattedUserPay = userPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const formattedGovPay = govPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if (userPayAmount.innerText !== formattedUserPay) {
+                userPayAmount.innerText = formattedUserPay;
+                triggerAnimation(userPayAmount);
+            }
+            if (govPayAmount.innerText !== formattedGovPay) {
+                govPayAmount.innerText = formattedGovPay;
+                triggerAnimation(govPayAmount);
+            }
+        } else if (activeTab === 'fill40') {
+            let govInput = parseFloat(govPriceInput.value);
+            if (isNaN(govInput) || govInput < 0) govInput = 0;
+
+            let total = govInput / 0.6;
+            let userTopup = total * 0.4;
+
+            const formatMoney = (val) => '฿' + val.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            fillUserTopup.innerText = formatMoney(userTopup);
+            fillTotalAmount.innerText = formatMoney(total);
+            fillGovPart.innerText = formatMoney(govInput);
+            fillUserPart.innerText = formatMoney(userTopup);
+            fillTotalPart.innerText = formatMoney(total);
         }
     }
 
@@ -101,12 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
     quotaDayInput.addEventListener('input', calculate);
     quotaMonthInput.addEventListener('input', calculate);
 
-    // Section toggles
+    // Section toggles for Split Mode
     btnConfirm.addEventListener('click', () => {
-        if (priceInput.value === '0' || priceInput.value === '') return;
-        numpadSection.classList.add('hidden');
-        resultsSection.classList.remove('hidden');
-        calculate();
+        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+        if (activeTab === 'split') {
+            if (priceInput.value === '0' || priceInput.value === '') return;
+            numpadSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            calculate();
+        }
+        // Fill 40% mode auto-calculates live, confirm button could just hide numpad if desired
     });
 
     btnBack.addEventListener('click', () => {
@@ -128,9 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         localStorage.setItem('tct_history', JSON.stringify(history));
 
-        // Note: Quota auto-deduction removed per user request. 
-        // Quotas will now only be updated manually via settings.
-
         // Reset App
         priceInput.value = '0';
         resultsSection.classList.add('hidden');
@@ -145,24 +212,33 @@ document.addEventListener('DOMContentLoaded', () => {
     numBtns.forEach(btn => {
         btn.addEventListener('pointerdown', (e) => {
             e.preventDefault(); // Prevents simulated mouse click firing later
-            if (priceInput.value === '0') {
-                priceInput.value = btn.dataset.val;
+            if (activeInput.value === '0') {
+                activeInput.value = btn.dataset.val;
             } else {
-                priceInput.value += btn.dataset.val;
+                activeInput.value += btn.dataset.val;
+            }
+            if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
+                calculate();
             }
         });
     });
 
     btnClear.addEventListener('pointerdown', (e) => {
         e.preventDefault();
-        priceInput.value = '0';
+        activeInput.value = '0';
+        if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
+            calculate();
+        }
     });
 
     btnDel.addEventListener('pointerdown', (e) => {
         e.preventDefault();
-        priceInput.value = priceInput.value.slice(0, -1);
-        if (priceInput.value === '') {
-            priceInput.value = '0';
+        activeInput.value = activeInput.value.slice(0, -1);
+        if (activeInput.value === '') {
+            activeInput.value = '0';
+        }
+        if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
+            calculate();
         }
     });
 
@@ -230,7 +306,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial calculation
     calculate();
-    
-    // Auto focus price input
-    priceInput.focus();
 });
