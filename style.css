@@ -594,17 +594,12 @@ footer p {
     font-weight: 700;
 }
 
-.fill-total-box {
+.total-box {
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.75rem;
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
 }
 
-.fill-total-box .bd-val {
+.total-box .bd-val {
     color: #16a34a;
 }
 
