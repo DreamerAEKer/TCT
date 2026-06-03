@@ -38,7 +38,7 @@ body {
     font-family: 'Kanit', sans-serif;
     color: var(--text-main);
     background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
-    min-height: 100vh;
+    min-height: 100dvh; /* Use dvh for mobile Safari */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -63,7 +63,7 @@ body {
 .app-container {
     width: 100%;
     max-width: 428px; /* iPhone 13 Pro Max width */
-    height: 100vh;
+    height: 100dvh; /* Use dvh for mobile Safari */
     max-height: 926px; /* iPhone 13 Pro Max height */
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(20px);
@@ -85,7 +85,7 @@ body {
 
 /* Header */
 .app-header {
-    padding: 1.5rem 1.5rem 0 1.5rem;
+    padding: 1rem 1.5rem 0 1.5rem;
     z-index: 10;
 }
 
@@ -93,7 +93,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .logo {
@@ -202,7 +202,7 @@ body {
 
 /* Inputs */
 .input-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .input-group label {
@@ -229,8 +229,8 @@ body {
 
 .main-input {
     width: 100%;
-    padding: 1rem 3rem 1rem 1rem;
-    font-size: 2.5rem;
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    font-size: 2.25rem;
     font-family: 'Kanit', sans-serif;
     font-weight: 700;
     color: var(--text-main);
@@ -371,7 +371,7 @@ body {
 
 /* Numpad */
 .numpad-container {
-    margin-top: 1.5rem;
+    margin-top: 0.75rem;
 }
 
 .numpad {
@@ -384,7 +384,7 @@ body {
     background: #fff;
     border: none;
     border-radius: var(--radius-md);
-    padding: 1.25rem 0;
+    padding: 1rem 0;
     font-size: 1.5rem;
     font-weight: 500;
     font-family: 'Kanit', sans-serif;
