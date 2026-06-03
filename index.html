@@ -97,7 +97,7 @@
                     <div class="input-group">
                         <label>ราคาสินค้า (บาท)</label>
                         <div class="input-wrapper focus-ring">
-                            <input type="number" id="topup-price" class="native-input" placeholder="0" pattern="[0-9]*" inputmode="numeric">
+                            <input type="text" inputmode="decimal" id="topup-price" class="native-input" placeholder="0">
                             <span class="currency">฿</span>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                     <div class="input-group">
                         <label>สิทธิคงเหลือ (บาท) <span class="text-xs text-muted">(สูงสุด 200)</span></label>
                         <div class="input-wrapper focus-ring">
-                            <input type="number" id="topup-quota" class="native-input" placeholder="200" pattern="[0-9]*" inputmode="numeric">
+                            <input type="text" inputmode="numeric" id="topup-quota" class="native-input" placeholder="200">
                             <span class="currency">฿</span>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                     <div class="input-group mb-0">
                         <label>ราคาสินค้ารวม (บาท)</label>
                         <div class="input-wrapper focus-ring">
-                            <input type="number" id="split-total-price" class="native-input" placeholder="0" pattern="[0-9]*" inputmode="numeric">
+                            <input type="text" inputmode="decimal" id="split-total-price" class="native-input" placeholder="0">
                             <span class="currency">฿</span>
                         </div>
                     </div>
@@ -169,14 +169,14 @@
                 <div class="input-group">
                     <label>สิทธิคงเหลือของวันนี้ (สูงสุด 200)</label>
                     <div class="input-wrapper focus-ring">
-                        <input type="number" id="setting-quota-day" class="native-input" placeholder="200">
+                        <input type="text" inputmode="numeric" id="setting-quota-day" class="native-input" placeholder="200">
                         <span class="currency">฿</span>
                     </div>
                 </div>
                 <div class="input-group">
                     <label>สิทธิคงเหลือของเดือนนี้ (สูงสุด 1,000)</label>
                     <div class="input-wrapper focus-ring">
-                        <input type="number" id="setting-quota-month" class="native-input" placeholder="1000">
+                        <input type="text" inputmode="numeric" id="setting-quota-month" class="native-input" placeholder="1000">
                         <span class="currency">฿</span>
                     </div>
                 </div>

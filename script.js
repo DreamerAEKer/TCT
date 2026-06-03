@@ -218,15 +218,15 @@ document.addEventListener('DOMContentLoaded', () => {
             div.innerHTML = `
                 <div class="person-header">
                     <div class="person-name">คนที่ ${index + 1}</div>
-                    <input type="number" class="person-price-input" 
+                    <input type="text" inputmode="decimal" class="person-price-input" 
                         data-index="${index}" 
-                        value="${person.price ? person.price.toFixed(2) : ''}" 
+                        value="${person.price ? Math.round(person.price * 100)/100 : ''}" 
                         placeholder="0"
                         ${isSplitEqual ? 'disabled' : ''}>
                 </div>
                 
                 <div class="person-quota-input-wrapper ${person.useCustomQuota ? '' : 'hidden'}">
-                    สิทธิรายวัน: <input type="number" class="person-custom-quota" data-index="${index}" value="${person.customQuota}">
+                    สิทธิรายวัน: <input type="text" inputmode="numeric" class="person-custom-quota" data-index="${index}" value="${person.customQuota}">
                 </div>
                 <button class="person-quota-toggle" data-index="${index}">
                     ${person.useCustomQuota ? 'ใช้สิทธิค่าเริ่มต้น' : 'ระบุสิทธิคงเหลือแยก'}
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isSplitEqual) {
                 person.price = perPersonPrice;
                 let inp = items[index].querySelector('.person-price-input');
-                if (inp) inp.value = (person.price > 0 ? person.price.toFixed(2) : '');
+                if (inp) inp.value = (person.price > 0 ? Math.round(person.price * 100)/100 : '');
             }
             sumEntered += (parseFloat(person.price) || 0);
 
