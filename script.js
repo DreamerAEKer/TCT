@@ -211,19 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSplitPersons() {
         splitCountEl.innerText = splitCount;
         splitPersonsList.innerHTML = '';
-        
-        let totalInputPrice = parseFloat(splitTotalPrice.value) || 0;
-        let perPersonPrice = isSplitEqual ? (totalInputPrice / splitCount) : 0;
-        let sumEntered = 0;
 
         splitPersons.forEach((person, index) => {
-            if (isSplitEqual) person.price = perPersonPrice;
-            sumEntered += (parseFloat(person.price) || 0);
-
-            // Calculate for this person
-            let activeQuota = person.useCustomQuota ? person.customQuota : globalQuotaDay;
-            let res = calculate6040(person.price, activeQuota, globalQuotaMonth);
-
             const div = document.createElement('div');
             div.className = 'person-item';
             div.innerHTML = `
@@ -246,15 +235,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="person-results mt-2">
                     <div class="text-blue">
                         <span class="text-xs">เป๋าตัง</span>
-                        <span>${formatMoney(res.user)} ฿</span>
+                        <span class="res-user">0.00 ฿</span>
                     </div>
                     <div class="text-green" style="text-align: right;">
                         <span class="text-xs">รัฐช่วย</span>
-                        <span>${formatMoney(res.gov)} ฿</span>
+                        <span class="res-gov">0.00 ฿</span>
                     </div>
                 </div>
             `;
             splitPersonsList.appendChild(div);
+        });
+
+        // Attach events to new inputs
+        document.querySelectorAll('.person-price-input').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].price = parseFloat(e.target.value) || 0;
+                updateSplitCalculations(); 
+            });
+        });
+
+        document.querySelectorAll('.person-quota-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].useCustomQuota = !splitPersons[idx].useCustomQuota;
+                renderSplitPersons(); 
+            });
+        });
+
+        document.querySelectorAll('.person-custom-quota').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].customQuota = parseFloat(e.target.value) || 0;
+                updateSplitCalculations();
+            });
+        });
+
+        updateSplitCalculations();
+    }
+
+    function updateSplitCalculations() {
+        let totalInputPrice = parseFloat(splitTotalPrice.value) || 0;
+        let perPersonPrice = isSplitEqual ? (totalInputPrice / splitCount) : 0;
+        let sumEntered = 0;
+
+        const items = document.querySelectorAll('.person-item');
+
+        splitPersons.forEach((person, index) => {
+            if (isSplitEqual) {
+                person.price = perPersonPrice;
+                let inp = items[index].querySelector('.person-price-input');
+                if (inp) inp.value = (person.price > 0 ? person.price.toFixed(2) : '');
+            }
+            sumEntered += (parseFloat(person.price) || 0);
+
+            // Calculate for this person
+            let activeQuota = person.useCustomQuota ? person.customQuota : globalQuotaDay;
+            let res = calculate6040(person.price, activeQuota, globalQuotaMonth);
+
+            // Update DOM text directly
+            items[index].querySelector('.res-user').innerText = formatMoney(res.user) + ' ฿';
+            items[index].querySelector('.res-gov').innerText = formatMoney(res.gov) + ' ฿';
         });
 
         // Update Summary
@@ -263,41 +304,15 @@ document.addEventListener('DOMContentLoaded', () => {
             splitErrorMsg.classList.add('hidden');
         } else {
             splitSumEntered.innerText = formatMoney(sumEntered) + ' ฿';
-            // Show error if difference > 0.01 (float issues)
             if (Math.abs(totalInputPrice - sumEntered) > 0.02 && totalInputPrice > 0) {
                 splitErrorMsg.classList.remove('hidden');
             } else {
                 splitErrorMsg.classList.add('hidden');
             }
         }
-
-        // Attach events to new inputs
-        document.querySelectorAll('.person-price-input:not([disabled])').forEach(inp => {
-            inp.addEventListener('input', (e) => {
-                let idx = e.target.dataset.index;
-                splitPersons[idx].price = parseFloat(e.target.value) || 0;
-                renderSplitPersons(); // re-render to update calculations
-            });
-        });
-
-        document.querySelectorAll('.person-quota-toggle').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                let idx = e.target.dataset.index;
-                splitPersons[idx].useCustomQuota = !splitPersons[idx].useCustomQuota;
-                renderSplitPersons();
-            });
-        });
-
-        document.querySelectorAll('.person-custom-quota').forEach(inp => {
-            inp.addEventListener('input', (e) => {
-                let idx = e.target.dataset.index;
-                splitPersons[idx].customQuota = parseFloat(e.target.value) || 0;
-                renderSplitPersons();
-            });
-        });
     }
 
-    splitTotalPrice.addEventListener('input', renderSplitPersons);
+    splitTotalPrice.addEventListener('input', updateSplitCalculations);
 
     btnAddPerson.addEventListener('click', () => {
         if (splitCount < 10) {
