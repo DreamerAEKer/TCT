@@ -1,309 +1,394 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Fix iOS active state delay
+    // Prevent iOS Safari bounce/active delay
     document.body.addEventListener('touchstart', function() {}, {passive: true});
 
-    // Inputs
-    const priceInput = document.getElementById('price');
-    const govPriceInput = document.getElementById('gov-price');
-    let activeInput = priceInput; // default
-
-    // Quotas
-    const quotaDayInput = document.getElementById('quota-day');
-    const quotaMonthInput = document.getElementById('quota-month');
+    // Elements - Global
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    const timeAlert = document.getElementById('time-alert');
     
-    // Split Bill Elements
-    const userPayAmount = document.getElementById('user-pay-amount');
-    const govPayAmount = document.getElementById('gov-pay-amount');
-    
-    // Fill 40% Elements
-    const fillUserTopup = document.getElementById('fill-user-topup');
-    const fillTotalAmount = document.getElementById('fill-total-amount');
-    const fillGovPart = document.getElementById('fill-gov-part');
-    const fillUserPart = document.getElementById('fill-user-part');
-    const fillTotalPart = document.getElementById('fill-total-part');
-
-    // Modal elements
+    // Modals
     const settingsBtn = document.getElementById('settings-btn');
     const closeSettingsBtn = document.getElementById('close-settings');
     const settingsModal = document.getElementById('settings-modal');
+    const btnSaveSettings = document.getElementById('btn-save-settings');
+    const settingQuotaDay = document.getElementById('setting-quota-day');
+    const settingQuotaMonth = document.getElementById('setting-quota-month');
 
-    // Section elements
-    const numpadSection = document.getElementById('numpad-section');
-    const resultsSection = document.getElementById('results-section');
-    const btnConfirm = document.getElementById('btn-confirm');
-    const btnBack = document.getElementById('btn-back');
-    const btnDone = document.getElementById('btn-done');
-
-    // History elements
     const historyBtn = document.getElementById('history-btn');
-    const historyModal = document.getElementById('history-modal');
     const closeHistoryBtn = document.getElementById('close-history');
+    const historyModal = document.getElementById('history-modal');
     const historyList = document.getElementById('history-list');
     const clearHistoryBtn = document.getElementById('clear-history');
 
-    // Tab elements
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    // TAB 1: Calculate
+    const calcPrice = document.getElementById('calc-price');
+    const calcUserPay = document.getElementById('calc-user-pay');
+    const calcGovPay = document.getElementById('calc-gov-pay');
+    const calcNumpad = document.getElementById('calc-numpad');
+    const calcResults = document.getElementById('calc-results');
+    const calcActions = document.getElementById('calc-actions');
+    const btnCalcConfirm = document.getElementById('btn-calc-confirm');
+    const btnCalcEdit = document.getElementById('btn-calc-edit');
+    const btnCalcDone = document.getElementById('btn-calc-done');
+    const numBtns = document.querySelectorAll('.num-btn[data-val]');
+    const btnClear = document.querySelector('.clear-btn');
+    const btnDel = document.querySelector('.del-btn');
 
-    // State
-    let quotaDay = Math.round((parseFloat(localStorage.getItem('tct_quotaDay')) || 200) * 100) / 100;
-    let quotaMonth = Math.round((parseFloat(localStorage.getItem('tct_quotaMonth')) || 1000) * 100) / 100;
-    let history = JSON.parse(localStorage.getItem('tct_history')) || [];
+    // TAB 2: Top-up
+    const topupPrice = document.getElementById('topup-price');
+    const topupQuota = document.getElementById('topup-quota');
+    const topupAmount = document.getElementById('topup-amount');
 
-    const timeAlert = document.getElementById('time-alert');
+    // TAB 3: Split
+    const splitTotalPrice = document.getElementById('split-total-price');
+    const splitCountEl = document.getElementById('split-count');
+    const btnRemovePerson = document.getElementById('btn-remove-person');
+    const btnAddPerson = document.getElementById('btn-add-person');
+    const btnSplitEqual = document.getElementById('btn-split-equal');
+    const btnSplitCustom = document.getElementById('btn-split-custom');
+    const splitPersonsList = document.getElementById('split-persons-list');
+    const splitSumEntered = document.getElementById('split-sum-entered');
+    const splitErrorMsg = document.getElementById('split-error-msg');
 
-    quotaDayInput.value = quotaDay;
-    quotaMonthInput.value = quotaMonth;
+    // State Variables
+    let globalQuotaDay = 200;
+    let globalQuotaMonth = 1000;
+    let historyData = [];
+    
+    // Split State
+    let splitCount = 2;
+    let isSplitEqual = true;
+    let splitPersons = [];
+
+    // Initialize State from LocalStorage
+    function initState() {
+        // Fix for "0 baht" bug - fallback to defaults if 0 or invalid
+        let qd = parseFloat(localStorage.getItem('tct_quotaDay'));
+        if (isNaN(qd) || qd <= 0) qd = 200;
+        globalQuotaDay = qd;
+
+        let qm = parseFloat(localStorage.getItem('tct_quotaMonth'));
+        if (isNaN(qm) || qm <= 0) qm = 1000;
+        globalQuotaMonth = qm;
+
+        historyData = JSON.parse(localStorage.getItem('tct_history')) || [];
+        
+        settingQuotaDay.value = globalQuotaDay;
+        settingQuotaMonth.value = globalQuotaMonth;
+        topupQuota.value = globalQuotaDay; // default Top-up quota to daily quota
+    }
 
     function checkTimeRestriction() {
-        const now = new Date();
-        const hours = now.getHours();
-        // Allowed time: 06:00 - 23:00
-        if (hours < 6 || hours >= 23) {
+        const h = new Date().getHours();
+        if (h < 6 || h >= 23) {
             timeAlert.classList.remove('hidden');
         } else {
             timeAlert.classList.add('hidden');
         }
     }
-    
-    // Check time once on load
-    checkTimeRestriction();
 
-    // Tab Switching
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active from all
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.add('hidden'));
-
-            // Add active to clicked
-            btn.classList.add('active');
-            const targetId = `tab-${btn.dataset.tab}`;
-            document.getElementById(targetId).classList.remove('hidden');
-
-            // Switch active input
-            document.querySelectorAll('.numpad-target').forEach(inp => inp.classList.remove('active-target'));
-            if (btn.dataset.tab === 'split') {
-                activeInput = priceInput;
-                activeInput.classList.add('active-target');
-                numpadSection.classList.remove('hidden');
-                if (priceInput.value !== '' && priceInput.value !== '0' && !resultsSection.classList.contains('hidden')) {
-                    numpadSection.classList.add('hidden');
-                }
-            } else if (btn.dataset.tab === 'fill40') {
-                activeInput = govPriceInput;
-                activeInput.classList.add('active-target');
-                numpadSection.classList.remove('hidden'); // Fill 40 updates live, always show numpad initially unless we decide otherwise
-            }
-            calculate();
-        });
-    });
-
-    function calculate() {
-        checkTimeRestriction(); // Check again when user calculates
-        
-        // Quota updates
-        quotaDay = parseFloat(quotaDayInput.value);
-        quotaMonth = parseFloat(quotaMonthInput.value);
-        if (isNaN(quotaDay) || quotaDay < 0) quotaDay = 0;
-        if (isNaN(quotaMonth) || quotaMonth < 0) quotaMonth = 0;
-        localStorage.setItem('tct_quotaDay', quotaDay);
-        localStorage.setItem('tct_quotaMonth', quotaMonth);
-
-        // Active Tab Logic
-        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-
-        if (activeTab === 'split') {
-            let price = parseFloat(priceInput.value);
-            if (isNaN(price) || price < 0) price = 0;
-
-            if (quotaDay > 200) quotaDay = 200;
-            if (quotaMonth > 1000) quotaMonth = 1000;
-
-            // Government pays 60%, capped at BOTH remaining daily and monthly quotas
-            let govPay = price * 0.6;
-            govPay = Math.min(govPay, quotaDay, quotaMonth);
-
-            // User pays the rest
-            let userPay = price - govPay;
-
-            // Format to 2 decimal places
-            const formattedUserPay = userPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const formattedGovPay = govPay.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            if (userPayAmount.innerText !== formattedUserPay) {
-                userPayAmount.innerText = formattedUserPay;
-                triggerAnimation(userPayAmount);
-            }
-            if (govPayAmount.innerText !== formattedGovPay) {
-                govPayAmount.innerText = formattedGovPay;
-                triggerAnimation(govPayAmount);
-            }
-        } else if (activeTab === 'fill40') {
-            let govInput = parseFloat(govPriceInput.value);
-            if (isNaN(govInput) || govInput < 0) govInput = 0;
-
-            let total = govInput / 0.6;
-            let userTopup = total * 0.4;
-
-            const formatMoney = (val) => '฿' + val.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            fillUserTopup.innerText = formatMoney(userTopup);
-            fillTotalAmount.innerText = formatMoney(total);
-            fillGovPart.innerText = formatMoney(govInput);
-            fillUserPart.innerText = formatMoney(userTopup);
-            fillTotalPart.innerText = formatMoney(total);
-        }
-    }
-
-    function triggerAnimation(element) {
+    function triggerPulse(element) {
         element.classList.remove('animate-pulse');
-        // Force reflow
-        void element.offsetWidth;
+        void element.offsetWidth; // Reflow
         element.classList.add('animate-pulse');
     }
 
-    // Add event listeners for quota inputs
-    quotaDayInput.addEventListener('input', calculate);
-    quotaMonthInput.addEventListener('input', calculate);
+    function formatMoney(amount) {
+        return amount.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-    // Section toggles for Split Mode
-    btnConfirm.addEventListener('click', () => {
-        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-        if (activeTab === 'split') {
-            if (priceInput.value === '0' || priceInput.value === '') return;
-            numpadSection.classList.add('hidden');
-            resultsSection.classList.remove('hidden');
-            calculate();
-        }
-        // Fill 40% mode auto-calculates live, confirm button could just hide numpad if desired
-    });
+    // ========== Core Calculate Logic (60/40) ==========
+    function calculate6040(price, quotaD, quotaM) {
+        if (isNaN(price) || price <= 0) return { gov: 0, user: 0 };
+        let gov = price * 0.6;
+        gov = Math.min(gov, quotaD, quotaM);
+        let user = price - gov;
+        return { gov, user };
+    }
 
-    btnBack.addEventListener('click', () => {
-        resultsSection.classList.add('hidden');
-        numpadSection.classList.remove('hidden');
-    });
-
-    btnDone.addEventListener('click', () => {
-        let currentGovPay = parseFloat(govPayAmount.innerText.replace(/,/g, ''));
-        let currentUserPay = parseFloat(userPayAmount.innerText.replace(/,/g, ''));
-        let currentPrice = parseFloat(priceInput.value);
-
-        // Save History
-        history.unshift({
-            time: new Date().toLocaleString('th-TH'),
-            price: currentPrice,
-            gov: currentGovPay,
-            user: currentUserPay
+    // ========== TAB SWITCHING ==========
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.target).classList.add('active');
         });
-        localStorage.setItem('tct_history', JSON.stringify(history));
-
-        // Reset App
-        priceInput.value = '0';
-        resultsSection.classList.add('hidden');
-        numpadSection.classList.remove('hidden');
     });
 
-    // Numpad logic
-    const numBtns = document.querySelectorAll('.num-btn[data-val]');
-    const btnClear = document.getElementById('btn-clear');
-    const btnDel = document.getElementById('btn-del');
-
+    // ========== TAB 1: Normal Calculate ==========
     numBtns.forEach(btn => {
         btn.addEventListener('pointerdown', (e) => {
-            e.preventDefault(); // Prevents simulated mouse click firing later
-            if (activeInput.value === '0') {
-                activeInput.value = btn.dataset.val;
-            } else {
-                activeInput.value += btn.dataset.val;
-            }
-            if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
-                calculate();
-            }
+            e.preventDefault();
+            if (calcPrice.value === '0') calcPrice.value = btn.dataset.val;
+            else calcPrice.value += btn.dataset.val;
         });
     });
 
-    btnClear.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        activeInput.value = '0';
-        if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
-            calculate();
-        }
+    btnClear.addEventListener('pointerdown', (e) => { e.preventDefault(); calcPrice.value = '0'; });
+    btnDel.addEventListener('pointerdown', (e) => { 
+        e.preventDefault(); 
+        calcPrice.value = calcPrice.value.slice(0, -1) || '0'; 
     });
 
-    btnDel.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        activeInput.value = activeInput.value.slice(0, -1);
-        if (activeInput.value === '') {
-            activeInput.value = '0';
-        }
-        if (document.querySelector('.tab-btn.active').dataset.tab === 'fill40') {
-            calculate();
-        }
+    btnCalcConfirm.addEventListener('click', () => {
+        let p = parseFloat(calcPrice.value);
+        if (isNaN(p) || p <= 0) return;
+        
+        checkTimeRestriction();
+        let res = calculate6040(p, globalQuotaDay, globalQuotaMonth);
+        
+        calcUserPay.innerText = formatMoney(res.user);
+        calcGovPay.innerText = formatMoney(res.gov);
+        
+        calcNumpad.classList.add('hidden');
+        calcResults.classList.remove('hidden');
+        calcActions.classList.remove('hidden');
+        
+        triggerPulse(calcUserPay);
+        triggerPulse(calcGovPay);
     });
 
-    // Settings Modal listeners
-    settingsBtn.addEventListener('click', () => {
-        settingsModal.classList.remove('hidden');
+    btnCalcEdit.addEventListener('click', () => {
+        calcResults.classList.add('hidden');
+        calcActions.classList.add('hidden');
+        calcNumpad.classList.remove('hidden');
     });
 
-    closeSettingsBtn.addEventListener('click', () => {
-        settingsModal.classList.add('hidden');
+    btnCalcDone.addEventListener('click', () => {
+        let p = parseFloat(calcPrice.value);
+        let res = calculate6040(p, globalQuotaDay, globalQuotaMonth);
+        historyData.unshift({
+            time: new Date().toLocaleString('th-TH'),
+            type: 'คำนวณปกติ',
+            price: p, gov: res.gov, user: res.user
+        });
+        localStorage.setItem('tct_history', JSON.stringify(historyData));
+        
+        calcPrice.value = '0';
+        calcResults.classList.add('hidden');
+        calcActions.classList.add('hidden');
+        calcNumpad.classList.remove('hidden');
     });
 
-    settingsModal.addEventListener('click', (e) => {
-        if (e.target === settingsModal) {
-            settingsModal.classList.add('hidden');
-        }
-    });
-
-    // History rendering
-    function renderHistory() {
-        historyList.innerHTML = '';
-        if (history.length === 0) {
-            historyList.innerHTML = '<p style="text-align:center; color:#64748b;">ไม่มีประวัติการใช้งาน</p>';
+    // ========== TAB 2: Top-up ==========
+    function calcTopup() {
+        let p = parseFloat(topupPrice.value) || 0;
+        let q = parseFloat(topupQuota.value) || 0;
+        
+        if (p <= 0) {
+            topupAmount.innerText = "0.00";
             return;
         }
 
-        history.forEach(item => {
+        // We assume Top-up quota applies as the limiting factor (ignoring month quota if they just check day)
+        // Gov pays 60%, capped at Q
+        let gov = Math.min(p * 0.6, q);
+        let user = p - gov;
+        
+        topupAmount.innerText = formatMoney(user);
+    }
+
+    topupPrice.addEventListener('input', calcTopup);
+    topupQuota.addEventListener('input', calcTopup);
+
+    // ========== TAB 3: Split Bill ==========
+    function initSplitPersons() {
+        splitPersons = [];
+        for(let i=0; i<splitCount; i++) {
+            splitPersons.push({
+                id: i,
+                price: 0,
+                customQuota: globalQuotaDay, // default to global daily quota
+                useCustomQuota: false
+            });
+        }
+        renderSplitPersons();
+    }
+
+    function renderSplitPersons() {
+        splitCountEl.innerText = splitCount;
+        splitPersonsList.innerHTML = '';
+        
+        let totalInputPrice = parseFloat(splitTotalPrice.value) || 0;
+        let perPersonPrice = isSplitEqual ? (totalInputPrice / splitCount) : 0;
+        let sumEntered = 0;
+
+        splitPersons.forEach((person, index) => {
+            if (isSplitEqual) person.price = perPersonPrice;
+            sumEntered += (parseFloat(person.price) || 0);
+
+            // Calculate for this person
+            let activeQuota = person.useCustomQuota ? person.customQuota : globalQuotaDay;
+            let res = calculate6040(person.price, activeQuota, globalQuotaMonth);
+
             const div = document.createElement('div');
-            div.className = 'history-item';
+            div.className = 'person-item';
             div.innerHTML = `
-                <div class="time">${item.time}</div>
-                <div class="details">
-                    <span>สินค้า: ${item.price} ฿</span>
-                    <span class="text-blue">เป๋าตัง: ${item.user} ฿</span>
-                    <span class="text-green">รัฐ: ${item.gov} ฿</span>
+                <div class="person-header">
+                    <div class="person-name">คนที่ ${index + 1}</div>
+                    <input type="number" class="person-price-input" 
+                        data-index="${index}" 
+                        value="${person.price ? person.price.toFixed(2) : ''}" 
+                        placeholder="0"
+                        ${isSplitEqual ? 'disabled' : ''}>
+                </div>
+                
+                <div class="person-quota-input-wrapper ${person.useCustomQuota ? '' : 'hidden'}">
+                    สิทธิรายวัน: <input type="number" class="person-custom-quota" data-index="${index}" value="${person.customQuota}">
+                </div>
+                <button class="person-quota-toggle" data-index="${index}">
+                    ${person.useCustomQuota ? 'ใช้สิทธิค่าเริ่มต้น' : 'ระบุสิทธิคงเหลือแยก'}
+                </button>
+
+                <div class="person-results mt-2">
+                    <div class="text-blue">
+                        <span class="text-xs">เป๋าตัง</span>
+                        <span>${formatMoney(res.user)} ฿</span>
+                    </div>
+                    <div class="text-green" style="text-align: right;">
+                        <span class="text-xs">รัฐช่วย</span>
+                        <span>${formatMoney(res.gov)} ฿</span>
+                    </div>
                 </div>
             `;
-            historyList.appendChild(div);
+            splitPersonsList.appendChild(div);
+        });
+
+        // Update Summary
+        if (isSplitEqual) {
+            splitSumEntered.innerText = formatMoney(totalInputPrice) + ' ฿';
+            splitErrorMsg.classList.add('hidden');
+        } else {
+            splitSumEntered.innerText = formatMoney(sumEntered) + ' ฿';
+            // Show error if difference > 0.01 (float issues)
+            if (Math.abs(totalInputPrice - sumEntered) > 0.02 && totalInputPrice > 0) {
+                splitErrorMsg.classList.remove('hidden');
+            } else {
+                splitErrorMsg.classList.add('hidden');
+            }
+        }
+
+        // Attach events to new inputs
+        document.querySelectorAll('.person-price-input:not([disabled])').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].price = parseFloat(e.target.value) || 0;
+                renderSplitPersons(); // re-render to update calculations
+            });
+        });
+
+        document.querySelectorAll('.person-quota-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].useCustomQuota = !splitPersons[idx].useCustomQuota;
+                renderSplitPersons();
+            });
+        });
+
+        document.querySelectorAll('.person-custom-quota').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                let idx = e.target.dataset.index;
+                splitPersons[idx].customQuota = parseFloat(e.target.value) || 0;
+                renderSplitPersons();
+            });
         });
     }
 
-    // History Modal listeners
+    splitTotalPrice.addEventListener('input', renderSplitPersons);
+
+    btnAddPerson.addEventListener('click', () => {
+        if (splitCount < 10) {
+            splitCount++;
+            splitPersons.push({ id: splitCount, price: 0, customQuota: globalQuotaDay, useCustomQuota: false });
+            renderSplitPersons();
+        }
+    });
+
+    btnRemovePerson.addEventListener('click', () => {
+        if (splitCount > 1) {
+            splitCount--;
+            splitPersons.pop();
+            renderSplitPersons();
+        }
+    });
+
+    btnSplitEqual.addEventListener('click', () => {
+        isSplitEqual = true;
+        btnSplitEqual.classList.add('active');
+        btnSplitCustom.classList.remove('active');
+        renderSplitPersons();
+    });
+
+    btnSplitCustom.addEventListener('click', () => {
+        isSplitEqual = false;
+        btnSplitCustom.classList.add('active');
+        btnSplitEqual.classList.remove('active');
+        renderSplitPersons();
+    });
+
+    // ========== Modals Logic ==========
+    settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+    
+    btnSaveSettings.addEventListener('click', () => {
+        let qd = parseFloat(settingQuotaDay.value);
+        let qm = parseFloat(settingQuotaMonth.value);
+        
+        if (!isNaN(qd) && qd > 0) globalQuotaDay = qd;
+        if (!isNaN(qm) && qm > 0) globalQuotaMonth = qm;
+
+        localStorage.setItem('tct_quotaDay', globalQuotaDay);
+        localStorage.setItem('tct_quotaMonth', globalQuotaMonth);
+        
+        // Update top-up quota if tab is active
+        topupQuota.value = globalQuotaDay;
+        calcTopup();
+        
+        // Re-render split if needed
+        renderSplitPersons();
+        
+        settingsModal.classList.add('hidden');
+    });
+
     historyBtn.addEventListener('click', () => {
-        renderHistory();
+        historyList.innerHTML = '';
+        if (historyData.length === 0) {
+            historyList.innerHTML = '<p class="text-muted" style="text-align:center; padding: 2rem;">ไม่มีประวัติการใช้งาน</p>';
+        } else {
+            historyData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="time">${item.time} - ${item.type}</div>
+                    <div style="display:flex; justify-content:space-between; margin-top:0.5rem;">
+                        <span class="text-bold">สินค้า: ${item.price} ฿</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:0.25rem;">
+                        <span class="text-blue text-xs">เป๋าตัง: ${item.user} ฿</span>
+                        <span class="text-green text-xs">รัฐ: ${item.gov} ฿</span>
+                    </div>
+                `;
+                historyList.appendChild(div);
+            });
+        }
         historyModal.classList.remove('hidden');
     });
 
-    closeHistoryBtn.addEventListener('click', () => {
-        historyModal.classList.add('hidden');
-    });
-
-    historyModal.addEventListener('click', (e) => {
-        if (e.target === historyModal) {
-            historyModal.classList.add('hidden');
-        }
-    });
+    closeHistoryBtn.addEventListener('click', () => historyModal.classList.add('hidden'));
 
     clearHistoryBtn.addEventListener('click', () => {
         if(confirm('ต้องการล้างประวัติทั้งหมดใช่หรือไม่?')) {
-            history = [];
-            localStorage.setItem('tct_history', JSON.stringify(history));
-            renderHistory();
+            historyData = [];
+            localStorage.setItem('tct_history', JSON.stringify(historyData));
+            historyBtn.click(); // re-render
         }
     });
 
-    // Initial calculation
-    calculate();
+    // Run Initialization
+    initState();
+    checkTimeRestriction();
+    initSplitPersons();
 });
