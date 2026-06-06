@@ -160,8 +160,25 @@
                     <button type="button" class="toggle-btn" id="btn-split-custom">ระบุราคาเอง</button>
                 </div>
 
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                    <button type="button" id="btn-sort-persons" class="secondary-btn" style="width: auto; margin-top: 0; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        <i class="fas fa-sort-amount-down"></i> จัดเรียงยอด (มากไปน้อย)
+                    </button>
+                </div>
+
                 <div id="split-persons-list" class="persons-list">
                     <!-- Persons will be generated here by JS -->
+                </div>
+
+                <div id="split-summary-footer" class="split-summary-footer hidden mt-4">
+                    <div class="summary-row">
+                        <span class="text-muted">จ่ายแล้ว <span id="summary-paid-count">0</span> คน:</span>
+                        <span class="text-green text-bold" id="summary-paid-amount">0.00 ฿</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">รอจ่าย <span id="summary-remain-count">0</span> คน:</span>
+                        <span class="text-blue text-bold" id="summary-remain-amount">0.00 ฿</span>
+                    </div>
                 </div>
 
                 <div class="total-summary mt-4">

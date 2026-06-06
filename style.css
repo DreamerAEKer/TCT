@@ -669,3 +669,44 @@ body {
     50% { transform: scale(1.05); color: var(--primary-dark); }
     100% { transform: scale(1); }
 }
+
+/* Split Bill Enhancements: Paid Tracking */
+.person-item.is-paid {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    opacity: 0.9;
+}
+
+.person-item.is-paid .person-results {
+    background: #dcfce7;
+    border-color: #4ade80;
+}
+
+.person-results {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.person-results:active {
+    transform: scale(0.98);
+}
+
+.split-summary-footer {
+    background: #fff;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.split-summary-footer.hidden {
+    display: none !important;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+}

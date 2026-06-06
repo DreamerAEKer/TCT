@@ -278,7 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: i,
                 price: 0,
                 customQuota: globalQuotaDay, // default to global daily quota
-                useCustomQuota: false
+                useCustomQuota: false,
+                isPaid: false
             });
         }
         renderSplitPersons();
@@ -290,10 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         splitPersons.forEach((person, index) => {
             const div = document.createElement('div');
-            div.className = 'person-item';
+            div.className = `person-item ${person.isPaid ? 'is-paid' : ''}`;
+            // If they are sorted, we should render them in array order but keep their original ID number for display
             div.innerHTML = `
                 <div class="person-header">
-                    <div class="person-name">คนที่ ${index + 1}</div>
+                    <div class="person-name">คนที่ ${person.id + 1}</div>
                     <input type="text" inputmode="decimal" class="person-price-input" 
                         data-index="${index}" 
                         value="${person.price ? Math.round(person.price * 100)/100 : ''}" 
@@ -307,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${person.useCustomQuota ? 'ใช้สิทธิค่าเริ่มต้น' : 'ระบุสิทธิคงเหลือแยก'}
                 </button>
 
-                <div class="person-results mt-2">
+                <div class="person-results mt-2" data-index="${index}">
                     <div class="text-blue">
                         <span class="text-xs">เป๋าตัง</span>
                         <span class="res-user">0.00 ฿</span>
@@ -356,6 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        document.querySelectorAll('.person-results').forEach(res => {
+            res.addEventListener('click', (e) => {
+                let idx = e.currentTarget.dataset.index;
+                splitPersons[idx].isPaid = !splitPersons[idx].isPaid;
+                renderSplitPersons();
+            });
+        });
+
         updateSplitCalculations();
     }
 
@@ -373,7 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
         splitPersons.forEach((person, index) => {
             if (isSplitEqual) {
                 person.price = perPersonPrice;
-                if (index === splitPersons.length - 1) {
+                // Since it's sorted, the remainder should go to the person with original ID = splitCount - 1
+                if (person.id === splitCount - 1) {
                     person.price += remainder;
                 }
                 let inp = items[index].querySelector('.person-price-input');
@@ -401,6 +412,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        let paidCount = 0;
+        let paidAmount = 0;
+        let remainCount = 0;
+        let remainAmount = 0;
+
         splitPersons.forEach((person, index) => {
             sumEntered += (parseFloat(person.price) || 0);
 
@@ -411,7 +427,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update DOM text directly
             items[index].querySelector('.res-user').innerText = formatMoney(res.user) + ' ฿';
             items[index].querySelector('.res-gov').innerText = formatMoney(res.gov) + ' ฿';
+            
+            if (person.isPaid) {
+                paidCount++;
+                paidAmount += (parseFloat(person.price) || 0);
+            } else {
+                remainCount++;
+                remainAmount += (parseFloat(person.price) || 0);
+            }
         });
+
+        // Update Summary Footer
+        const summaryFooter = document.getElementById('split-summary-footer');
+        if (paidCount > 0 || remainCount > 0) {
+            summaryFooter.classList.remove('hidden');
+            document.getElementById('summary-paid-count').innerText = paidCount;
+            document.getElementById('summary-paid-amount').innerText = formatMoney(paidAmount) + ' ฿';
+            document.getElementById('summary-remain-count').innerText = remainCount;
+            document.getElementById('summary-remain-amount').innerText = formatMoney(remainAmount) + ' ฿';
+        } else {
+            summaryFooter.classList.add('hidden');
+        }
 
         // Update Summary
         if (isSplitEqual) {
@@ -431,8 +467,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnAddPerson.addEventListener('click', () => {
         if (splitCount < 10) {
+            splitPersons.push({ id: splitCount, price: 0, customQuota: globalQuotaDay, useCustomQuota: false, isPaid: false });
             splitCount++;
-            splitPersons.push({ id: splitCount, price: 0, customQuota: globalQuotaDay, useCustomQuota: false });
             renderSplitPersons();
         }
     });
@@ -458,6 +494,18 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSplitEqual.classList.remove('active');
         renderSplitPersons();
     });
+
+    const btnSortPersons = document.getElementById('btn-sort-persons');
+    if (btnSortPersons) {
+        btnSortPersons.addEventListener('click', () => {
+            splitPersons.sort((a, b) => {
+                let priceA = parseFloat(a.price) || 0;
+                let priceB = parseFloat(b.price) || 0;
+                return priceB - priceA; // Descending
+            });
+            renderSplitPersons();
+        });
+    }
 
     // ========== Modals Logic ==========
     settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
