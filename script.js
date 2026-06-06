@@ -134,15 +134,22 @@ document.addEventListener('DOMContentLoaded', () => {
     numBtns.forEach(btn => {
         btn.addEventListener('pointerdown', (e) => {
             e.preventDefault();
-            if (calcPrice.value === '0') calcPrice.value = btn.dataset.val;
-            else calcPrice.value += btn.dataset.val;
+            let val = btn.dataset.val;
+            
+            if (calcPrice.value === '0' && val !== '.') {
+                calcPrice.value = val;
+            } else {
+                if (val === '.' && calcPrice.value.includes('.')) return;
+                calcPrice.value += val;
+            }
         });
     });
 
     btnClear.addEventListener('pointerdown', (e) => { e.preventDefault(); calcPrice.value = '0'; });
     btnDel.addEventListener('pointerdown', (e) => { 
         e.preventDefault(); 
-        calcPrice.value = calcPrice.value.slice(0, -1) || '0'; 
+        calcPrice.value = calcPrice.value.slice(0, -1);
+        if (calcPrice.value === '') calcPrice.value = '0';
     });
 
     btnCalcConfirm.addEventListener('click', () => {
@@ -345,7 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSplitCalculations() {
         let totalInputPrice = parseFloat(splitTotalPrice.value) || 0;
-        let perPersonPrice = isSplitEqual ? (totalInputPrice / splitCount) : 0;
+        let perPersonPrice = isSplitEqual ? Math.floor((totalInputPrice / splitCount) * 100) / 100 : 0;
+        let remainder = isSplitEqual ? totalInputPrice - (perPersonPrice * splitCount) : 0;
+        // Fix JS floating point imprecision for remainder
+        remainder = Math.round(remainder * 100) / 100;
+        
         let sumEntered = 0;
 
         const items = document.querySelectorAll('.person-item');
@@ -353,6 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
         splitPersons.forEach((person, index) => {
             if (isSplitEqual) {
                 person.price = perPersonPrice;
+                if (index === splitPersons.length - 1) {
+                    person.price += remainder;
+                }
                 let inp = items[index].querySelector('.person-price-input');
                 if (inp) inp.value = (person.price > 0 ? Math.round(person.price * 100)/100 : '');
             }
