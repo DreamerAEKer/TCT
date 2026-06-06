@@ -379,6 +379,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 let inp = items[index].querySelector('.person-price-input');
                 if (inp) inp.value = (person.price > 0 ? Math.round(person.price * 100)/100 : '');
             }
+        });
+
+        if (!isSplitEqual) {
+            let sumOthers = 0;
+            for (let i = 0; i < splitPersons.length - 1; i++) {
+                sumOthers += (parseFloat(splitPersons[i].price) || 0);
+            }
+            
+            let lastPersonIndex = splitPersons.length - 1;
+            let lastInp = items[lastPersonIndex].querySelector('.person-price-input');
+            
+            // Only auto-adjust if the user is not actively typing in the last input
+            if (document.activeElement !== lastInp) {
+                let remaining = totalInputPrice - sumOthers;
+                if (remaining < 0) remaining = 0;
+                remaining = Math.round(remaining * 100) / 100;
+                
+                splitPersons[lastPersonIndex].price = remaining;
+                if (lastInp) lastInp.value = remaining > 0 ? remaining : '';
+            }
+        }
+
+        splitPersons.forEach((person, index) => {
             sumEntered += (parseFloat(person.price) || 0);
 
             // Calculate for this person
