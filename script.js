@@ -297,8 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" inputmode="decimal" class="person-price-input" 
                         data-index="${index}" 
                         value="${person.price ? Math.round(person.price * 100)/100 : ''}" 
-                        placeholder="0"
-                        ${isSplitEqual ? 'disabled' : ''}>
+                        placeholder="0">
                 </div>
                 
                 <div class="person-quota-input-wrapper ${person.useCustomQuota ? '' : 'hidden'}">
@@ -324,7 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Attach events to new inputs
         document.querySelectorAll('.person-price-input').forEach(inp => {
+            // Auto switch to custom mode when typing or focusing
+            const autoSwitchMode = () => {
+                if (isSplitEqual) {
+                    isSplitEqual = false;
+                    btnSplitCustom.classList.add('active');
+                    btnSplitEqual.classList.remove('active');
+                }
+            };
+            inp.addEventListener('focus', autoSwitchMode);
             inp.addEventListener('input', (e) => {
+                autoSwitchMode();
                 let idx = e.target.dataset.index;
                 splitPersons[idx].price = parseFloat(e.target.value) || 0;
                 updateSplitCalculations(); 
