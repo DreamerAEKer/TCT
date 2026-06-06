@@ -39,6 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const topupPrice = document.getElementById('topup-price');
     const topupQuota = document.getElementById('topup-quota');
     const topupAmount = document.getElementById('topup-amount');
+    const btnTopupNormal = document.getElementById('btn-topup-normal');
+    const btnTopupUser = document.getElementById('btn-topup-user');
+    const btnTopupGov = document.getElementById('btn-topup-gov');
+    const topupInputLabel = document.getElementById('topup-input-label');
+    const topupQuotaGroup = document.getElementById('topup-quota-group');
+    const topupResultTitle = document.getElementById('topup-result-title');
+    const topupResultHint = document.getElementById('topup-result-hint');
+    const topupExtraResults = document.getElementById('topup-extra-results');
+    const topupExtra1 = document.getElementById('topup-extra-1');
+    const topupExtra2 = document.getElementById('topup-extra-2');
+    
+    let topupMode = 'normal'; // 'normal', 'user', 'gov'
 
     // TAB 3: Split
     const splitTotalPrice = document.getElementById('split-total-price');
@@ -174,21 +186,78 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ========== TAB 2: Top-up ==========
+    function setTopupMode(mode) {
+        topupMode = mode;
+        btnTopupNormal.classList.toggle('active', mode === 'normal');
+        btnTopupUser.classList.toggle('active', mode === 'user');
+        btnTopupGov.classList.toggle('active', mode === 'gov');
+        
+        topupPrice.value = '';
+        
+        if (mode === 'normal') {
+            topupInputLabel.innerText = 'ราคาสินค้า (บาท)';
+            topupQuotaGroup.classList.remove('hidden');
+            topupResultTitle.innerText = 'จำนวนเงินที่ต้องเติมเข้า G-Wallet';
+            topupResultHint.innerText = 'เพื่อให้พอดีกับส่วนที่ต้องจ่ายเอง';
+            topupExtraResults.classList.add('hidden');
+        } else if (mode === 'user') {
+            topupInputLabel.innerText = 'เงินที่มีในเป๋าตัง (บาท)';
+            topupQuotaGroup.classList.remove('hidden'); // still need to check if gov part exceeds quota
+            topupResultTitle.innerText = 'ซื้อสินค้าได้สูงสุด';
+            topupResultHint.innerText = 'ราคาสินค้ารวม (คำนวณจากเงินเป๋าตังที่มี)';
+            topupExtraResults.classList.remove('hidden');
+        } else if (mode === 'gov') {
+            topupInputLabel.innerText = 'สิทธิรัฐที่ต้องการใช้ (บาท)';
+            topupQuotaGroup.classList.add('hidden'); // no need to check quota, input IS the quota
+            topupResultTitle.innerText = 'ซื้อสินค้าได้สูงสุด';
+            topupResultHint.innerText = 'ราคาสินค้ารวม (คำนวณจากสิทธิรัฐที่มี)';
+            topupExtraResults.classList.remove('hidden');
+        }
+        calcTopup();
+    }
+
+    btnTopupNormal.addEventListener('click', () => setTopupMode('normal'));
+    btnTopupUser.addEventListener('click', () => setTopupMode('user'));
+    btnTopupGov.addEventListener('click', () => setTopupMode('gov'));
+
     function calcTopup() {
-        let p = parseFloat(topupPrice.value) || 0;
+        let val = parseFloat(topupPrice.value) || 0;
         let q = parseFloat(topupQuota.value) || 0;
         
-        if (p <= 0) {
+        if (val <= 0) {
             topupAmount.innerText = "0.00";
+            topupExtra1.innerText = "0.00";
+            topupExtra2.innerText = "0.00";
             return;
         }
 
-        // We assume Top-up quota applies as the limiting factor (ignoring month quota if they just check day)
-        // Gov pays 60%, capped at Q
-        let gov = Math.min(p * 0.6, q);
-        let user = p - gov;
-        
-        topupAmount.innerText = formatMoney(user);
+        if (topupMode === 'normal') {
+            let gov = Math.min(val * 0.6, q);
+            let user = val - gov;
+            topupAmount.innerText = formatMoney(user);
+        } else if (topupMode === 'user') {
+            // val = user money (40%)
+            let total = val / 0.4;
+            let gov = total * 0.6;
+            
+            // if gov needed exceeds quota, then total is limited by quota + user money
+            if (gov > q) {
+                // Actually if gov > q, user pays more than 40%. But reverse calculation usually assumes 60/40 strictly.
+                // Let's cap the total based on quota if they want to maximize 60/40.
+                gov = q;
+                total = val + gov; // They just use all their money + all quota
+            }
+            topupAmount.innerText = formatMoney(total);
+            topupExtra1.innerText = formatMoney(gov); // รัฐช่วย
+            topupExtra2.innerText = formatMoney(val); // เป๋าตัง
+        } else if (topupMode === 'gov') {
+            // val = gov money (60%)
+            let total = val / 0.6;
+            let user = total * 0.4;
+            topupAmount.innerText = formatMoney(total);
+            topupExtra1.innerText = formatMoney(val); // รัฐช่วย
+            topupExtra2.innerText = formatMoney(user); // ต้องเตรียมเป๋าตัง
+        }
     }
 
     topupPrice.addEventListener('input', calcTopup);

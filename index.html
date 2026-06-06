@@ -94,15 +94,21 @@
             <!-- TAB 2: Top-up -->
             <section id="tab-topup" class="tab-pane glass-card">
                 <div class="topup-layout">
+                    <div class="split-mode-toggle mb-4">
+                        <button type="button" class="toggle-btn active" id="btn-topup-normal">รู้ราคาสินค้า</button>
+                        <button type="button" class="toggle-btn" id="btn-topup-user">รู้เงินเป๋าตัง</button>
+                        <button type="button" class="toggle-btn" id="btn-topup-gov">รู้สิทธิรัฐ</button>
+                    </div>
+
                     <div class="input-group">
-                        <label>ราคาสินค้า (บาท)</label>
+                        <label id="topup-input-label">ราคาสินค้า (บาท)</label>
                         <div class="input-wrapper focus-ring">
                             <input type="text" inputmode="decimal" id="topup-price" class="native-input" placeholder="0">
                             <span class="currency">฿</span>
                         </div>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group" id="topup-quota-group">
                         <label>สิทธิคงเหลือ (บาท) <span class="text-xs text-muted">(สูงสุด 200)</span></label>
                         <div class="input-wrapper focus-ring">
                             <input type="text" inputmode="numeric" id="topup-quota" class="native-input" placeholder="200">
@@ -111,9 +117,20 @@
                     </div>
 
                     <div class="result-box highlight-pay mt-4">
-                        <h3>จำนวนเงินที่ต้องเติมเข้า G-Wallet</h3>
+                        <h3 id="topup-result-title">จำนวนเงินที่ต้องเติมเข้า G-Wallet</h3>
                         <div class="amount giant-amount" id="topup-amount">0.00</div>
-                        <p class="hint">เพื่อให้พอดีกับส่วนที่ต้องจ่ายเอง</p>
+                        <p class="hint" id="topup-result-hint">เพื่อให้พอดีกับส่วนที่ต้องจ่ายเอง</p>
+                    </div>
+                    
+                    <div id="topup-extra-results" class="results-grid hidden mt-4">
+                        <div class="result-box user-pay" id="topup-box-1">
+                            <h3>สิทธิรัฐที่ใช้</h3>
+                            <div class="amount" id="topup-extra-1">0.00</div>
+                        </div>
+                        <div class="result-box gov-pay" id="topup-box-2">
+                            <h3>ต้องเตรียมเป๋าตัง</h3>
+                            <div class="amount" id="topup-extra-2">0.00</div>
+                        </div>
                     </div>
                 </div>
             </section>
